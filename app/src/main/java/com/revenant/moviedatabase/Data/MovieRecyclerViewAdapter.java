@@ -1,6 +1,7 @@
 package com.revenant.moviedatabase.Data;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.revenant.moviedatabase.Activities.MovieDetailActivity;
 import com.revenant.moviedatabase.Model.Movie;
 import com.revenant.moviedatabase.R;
 import com.squareup.picasso.Picasso;
@@ -33,7 +35,7 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.movie_row,parent,false);
 
-        return new ViewHolder(view, context);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -62,9 +64,9 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         TextView year;
         TextView type;
 
-        public ViewHolder(View itemView, Context ctx) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            context = ctx;
+
             title = itemView.findViewById(R.id.movieTitleId);
             poster= itemView.findViewById(R.id.movieImageId);
             year= itemView.findViewById(R.id.movieReleaseId);
@@ -73,7 +75,11 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context, "Row tapped!", Toast.LENGTH_LONG).show();
+                    Movie movie = movieList.get(getAdapterPosition());
+                    Intent intent = new Intent(context, MovieDetailActivity.class);
+                    intent.putExtra("movie",movie);
+                    context.startActivity(intent);
+
                 }
             });
         }

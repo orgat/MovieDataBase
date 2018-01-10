@@ -7,4 +7,5 @@ package com.revenant.moviedatabase.Utility;
 public class Constants {
     public static final String URL_LEFT= "http://www.omdbapi.com/?apikey=3fae25a&s=";
     public static final String URL_RIGHT= "&page=2";
+    public static final String URL= "http://www.omdbapi.com/?apikey=3fae25a&i=";
 }

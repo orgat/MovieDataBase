@@ -3,6 +3,7 @@ package com.revenant.moviedatabase.Activities;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -37,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private MovieRecyclerViewAdapter movieRecyclerViewAdapter;
     private List<Movie> movieList;
     private RequestQueue queue;
+    private AlertDialog.Builder alertDialogBuilder;
+    private AlertDialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +56,19 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                showInputDialogue();
             }
         });
 
         recyclerView = findViewById(R.id.recyclerViewId);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        movieList = new ArrayList<>();
-
         Prefs prefs = new Prefs(MainActivity.this);
         String search = prefs.getSearch();
-        movieList = getMovies(search);
+        movieList = new ArrayList<>();
+
+
+        getMovies(search);
 
         movieRecyclerViewAdapter = new MovieRecyclerViewAdapter(this, movieList);
         recyclerView.setAdapter(movieRecyclerViewAdapter);
@@ -89,10 +95,10 @@ public class MainActivity extends AppCompatActivity {
                         movie.setPoster(movieObj.getString("Poster"));
                         movie.setImdbId(movieObj.getString("imdbID"));
 
-
                         movieList.add(movie);
-                        //Log.d("Movies:", movie.getTitle());
                     }
+                    movieRecyclerViewAdapter.notifyDataSetChanged();
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -124,10 +130,40 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.new_search) {
+            showInputDialogue();
+            // return true;
         }
 
         return super.onOptionsItemSelected(item);
+
+    }
+
+    public void showInputDialogue() {
+        alertDialogBuilder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialogue_view, null);
+        final EditText newSearchEdt = view.findViewById(R.id.searchEdtId);
+        Button submitButton = view.findViewById(R.id.submitButtonId);
+
+
+        alertDialogBuilder.setView(view);
+        dialog = alertDialogBuilder.create();
+        dialog.show();
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Prefs prefs = new Prefs(MainActivity.this);
+
+                if (!newSearchEdt.getText().toString().isEmpty()) {
+                    String search = newSearchEdt.getText().toString();
+                    prefs.setSearch(search);
+                    movieList.clear();
+                    getMovies(search);
+
+                }
+                dialog.dismiss();
+            }
+        });
+
     }
 }
